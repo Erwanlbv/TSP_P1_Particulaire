@@ -65,6 +65,7 @@ def filtrage_part_global(i, long, larg, x, w, hist_obs, colormap, w_seuil):
 
     im = Image.open('Donnees_Moodle/sequences/sequence1/sequence100' + '0' * (i < 10) + str(i) + '.bmp')
 
+    #On calcule les poids des nouvelles particules
     for j in range(len(new_parts)):
         hist_parts.append(calcul_histogramme(im, np.array([new_parts[j, 0], new_parts[j, 1], long, larg]), colormap)[-1])
         new_w.append(np.exp(-lamb * D_squared(hist_parts[j], hist_obs)) * w[j])
@@ -73,6 +74,7 @@ def filtrage_part_global(i, long, larg, x, w, hist_obs, colormap, w_seuil):
     print('Somme poids avant normalisation : ' + str(np.sum(new_w)))
     new_w = new_w / np.sum(new_w)
 
+    #On calcule l'estimation une fois les poids normalisés
     est = np.array([0, 0], dtype='float64')
     for k in range(len(new_parts)):
         est += new_parts[k] * new_w[k]
@@ -80,6 +82,8 @@ def filtrage_part_global(i, long, larg, x, w, hist_obs, colormap, w_seuil):
     print('Estimation ' + str(est))
     est_to_images(im, est, long, larg, '../Plots/Exercice_2/Suivi_ll_fixes/image_' + str(i) + '.png') # Ne Fonctionne pas...
 
+    #Si un poids a une probabilité élevée (définie par w_seuil) cela signifie que beaucoup doivent avoir un
+    #poids faibles et les particules associées sont peu pertinentes. Dans ce cas on rééchantillonne.
     if (new_w > w_seuil).any():
         tirages, new_w = reechantillonage(range(len(new_parts)), new_w)
         new_parts = new_parts[tirages]

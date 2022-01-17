@@ -21,7 +21,7 @@ def est_to_images(image, est, long, larg, path): # Affiche et sauvegarde la pré
     plt.close(fig)
 
 
-def images_to_videos():
+def images_to_videos(): #Cette fonction va chercher une suite d'image dans un dossier choisi et créée une vidéo à partir de ces dernières.
     im = cv.imread('../Plots/Exercice_2/Suivi_ll_fixes/image_1.png')
     height, width = im.shape[0], im.shape[1]
     print(height, width)

@@ -3,11 +3,8 @@ import scipy.stats as stats
 
 from variables_p1 import *
 
-#Question 1:
-#Du fait du X**2, on ne sait pas si la valeur du X est positive ou négative
 
-
-def f(x_prec, n): #Chaîne non homogène (merde)
+def f(x_prec, n): #Chaîne non homogène
     return 0.5*x_prec + 25*x_prec/(1 + x_prec**2) + 8*np.cos(1.2*n)
 
 
@@ -47,10 +44,6 @@ def filtrage_particulaire(W, X, y_n, Q, R, estimations, n, T, w_seuil):  # X = [
     print('\n \n -------------------- Itération numéro :  ' + str(n) + ' --------------- \n \n')
     ree = False
     new_part = np.random.normal(f(X, n), Q, T)
-
-    #for i in range(T):
-    #    new_w.append(stats.norm.pdf(y_n, g(new_part[i]), R)*W[-1])
-    #print('-----' + str(new_w))
 
     #Version vectorielle :
     new_w = stats.norm.pdf(y_n, g(new_part), R) * W[-1]

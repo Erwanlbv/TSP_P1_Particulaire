@@ -31,7 +31,7 @@ def question_filt_ll_fixes():
     larg = res_obs[3] # Idem pour la largeur
     img_obs, colormap, hist_obs = calcul_histogramme(prem_image, res_obs, Nb) #On enregistre l'histrogramme de couleur du visage
 
-    if not(os.path.isfile('filtrage_sequence_3.txt')):
+    if not(os.path.isfile('filtrage_sequence_3.txt')): #On stocke les estimations dans un fichier (ça m'a servi pour créer différents visuels, pour éviter d'avoir à tout recalculer plusieurs fois
         W = np.zeros((T, N))
         X = np.zeros((T, N, 2))
         ests = np.zeros((N, 2))

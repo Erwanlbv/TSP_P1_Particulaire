@@ -26,7 +26,7 @@ def question_6():
     w_seuil = .5
 
     W = 1/N * np.ones((T, N))
-    X = np.random.normal(obs[0], Q, size=(T, N)) # On génère les premières particlues alétoirement autour de la première observation.
+    X = np.random.normal(obs[0], Q, size=(T, N)) # On génère les premières particlues aléatoirement autour de la première observation.
     x_est = [W[0].dot(X[0])]
     pos_ree = np.zeros(T)
 
