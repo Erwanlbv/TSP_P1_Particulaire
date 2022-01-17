@@ -63,8 +63,8 @@ def filtrage_particulaire(W, X, y_n, Q, R, estimations, n, T, w_seuil):  # X = [
     est = new_part.dot(new_w)
     estimations.append(est)
 
-    print("----- Valeur de l'observation : " + str(y_n))
-    print("Valeur de l'estimation : " + str(est))
+    print("----- Valeur de lamb'observation : " + str(y_n))
+    print("Valeur de lamb'estimation : " + str(est))
 
     #Réechantillonage si un poids est supérieur à w_seuil
     if (new_w >= w_seuil).any():

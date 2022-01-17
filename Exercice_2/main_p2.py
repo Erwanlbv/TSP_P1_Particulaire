@@ -1,8 +1,15 @@
+import time
+
 import PIL.Image
 import numpy as np
 import scipy.stats as stats
+import PIL.Image as Image
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+
 
 from variables_p2 import *
+from programmes_annexes import *
 from Donnees_Moodle.filtrage_particulaire import *
 
 
@@ -19,38 +26,23 @@ def D_squared(hist1, hist2):
     return 1 - np.sum(np.sqrt(hist1*hist2))
 
 
-def filtrage_particulaire_img():
+def filtrage_particulaire_unit(prem_image, res_obs, hist_obs, colormap, w_init):
 
-    W = np.zeros((T, N))
-    X = np.zeros((T, N))
-    ests = []
-
-    w_init = np.ones(N) / N
-
-    prem_image, names, nb_images, folder_name = lecture_image()
-    res_obs = selectionner_zone()
-    #Format res : [x, y, longueur, largeur]
-
-    long = res_obs[2]
-    larg = res_obs[3]
-
-    hist_obs = calcul_histogramme(prem_image, res_obs, Nb)[-1]
-
-    prem_parts = np.random.multivariate_normal(res_obs[0:2], R, size=N)
+    prem_parts = np.random.multivariate_normal(res_obs[0:2], R, size=N) #On initialise les particules à partir de la position donnée par selectionner_zone
     res_parts = []
 
     for i in range(len(prem_parts)):
-        res_parts.append([prem_parts[i, 0], prem_parts[i, 1], long, larg])
+        res_parts.append([prem_parts[i, 0], prem_parts[i, 1], res_obs[2], res_obs[3]])
     res_parts = np.array(res_parts)
 
     hists_pred = []
     for i in range(len(res_parts)):
-        hists_pred.append(calcul_histogramme(prem_image, res_parts[i], Nb)[-1])
+        hists_pred.append(calcul_histogramme(prem_image, res_parts[i], colormap)[-1])
     hists_pred = np.array(hists_pred)
 
     prem_w = []
     for i in range(len(hists_pred)):
-        prem_w.append(np.exp(-l * D_squared(hist_obs, hists_pred[i] * w_init[i])))
+        prem_w.append(np.exp(-lamb * D_squared(hist_obs, hists_pred[i])) * w_init[i])
     prem_w = np.array(prem_w)
 
     print( 'Poids total des poids avant norm :' + str(np.sum(prem_w)))
@@ -60,9 +52,56 @@ def filtrage_particulaire_img():
     for i in range(len(prem_parts)):
         est += prem_parts[i] * prem_w[i]
 
-    print(' \n Estimation : ' + str(est))
-    print('Observation : ' + str(res_obs[0:2]))
+    print(' \n Première Estimation : ' + str(est))
+    print('Première Observation : ' + str(res_obs[0:2]))
+
+    return prem_parts, prem_w, est
+
+
+def filtrage_part_global(i, long, larg, x, w, hist_obs, colormap, w_seuil):
+    new_parts = np.random.normal(x.flatten(), C1).reshape(N, 2) #Comme la matrice de cov est [[1, 0], [0, 1]] cela revient au même..
+    hist_parts = []
+    new_w = []
+
+    im = Image.open('Donnees_Moodle/sequences/sequence1/sequence100' + '0' * (i < 10) + str(i) + '.bmp')
+
+    for j in range(len(new_parts)):
+        hist_parts.append(calcul_histogramme(im, np.array([new_parts[j, 0], new_parts[j, 1], long, larg]), colormap)[-1])
+        new_w.append(np.exp(-lamb * D_squared(hist_parts[j], hist_obs)) * w[j])
+    new_w = np.array(new_w)
+
+    print('Somme poids avant normalisation : ' + str(np.sum(new_w)))
+    new_w = new_w / np.sum(new_w)
+
+    est = np.array([0, 0], dtype='float64')
+    for k in range(len(new_parts)):
+        est += new_parts[k] * new_w[k]
+
+    print('Estimation ' + str(est))
+    est_to_images(im, est, long, larg, '../Plots/Exercice_2/Suivi_ll_fixes/image_' + str(i) + '.png') # Ne Fonctionne pas...
+
+    if (new_w > w_seuil).any():
+        tirages, new_w = reechantillonage(range(len(new_parts)), new_w)
+        new_parts = new_parts[tirages]
+
+    return new_parts, new_w, est
 
 
 
-filtrage_particulaire_img()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
