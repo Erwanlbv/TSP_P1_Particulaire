@@ -22,26 +22,29 @@ def est_to_images(image, est, long, larg, path): # Affiche et sauvegarde la pré
 
 
 def images_to_videos(): #Cette fonction va chercher une suite d'image dans un dossier choisi et créée une vidéo à partir de ces dernières.
-    im = cv.imread('../Plots/Exercice_2/Suivi_ll_fixes/image_1.png')
+    im = cv.imread('../Plots/Exercice_2/Suivi_ll_fixes/suivi_corps/image_1.png')
     height, width = im.shape[0], im.shape[1]
     print(height, width)
     fourcc = cv.VideoWriter_fourcc(*'mp4v')
-    video = cv.VideoWriter('video.mp4', fourcc, 1.5, (width, height))
+    video = cv.VideoWriter('video_suivi_corps.mp4', fourcc, 1.5, (width, height))
 
     for i in range(48):
-        img = cv.imread('../Plots/Exercice_2/Suivi_ll_fixes/image_' + str(i) + '.png')
+        img = cv.imread('../Plots/Exercice_2/Suivi_ll_fixes/suivi_corps/image_' + str(i) + '.png')
         video.write(img)
 
     cv.destroyAllWindows()
     video.release()
 
-    cap = cv.VideoCapture('video.mp4')
+    cap = cv.VideoCapture('video_suivi_corps.mp4')
 
     if not(cap.isOpened()):
         print("Error opening video  file")
 
     while True:
         ret, frame = cap.read()
+
+        if not ret:
+            break
         time.sleep(0.5)
         cv.imshow('output', frame)
 
@@ -65,7 +68,7 @@ def test_on_display():
 
 
 def make_histo():
-    im = Image.open('../Plots/Exercice_2/Suivi_ll_fixes/image_1.png')
+    im = Image.open('../Plots/Exercice_2/Suivi_ll_fixes/suivi_corps/image_1.png')
 
     fig1 = plt.figure()
     plt.imshow(im)
