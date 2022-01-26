@@ -24,8 +24,9 @@ def multinomial_resample(weights):
 
 
 def lecture_image():
-    filenames = ''
-    T = ''
+    filenames = 'Donnees_Moodle/sequences/sequence1'
+    T = len(os.listdir(filenames))
+    print(T)
     im = Image.open('Donnees_Moodle/sequences/sequence1/sequence10000.bmp')
     plt.imshow(im)
     
